@@ -1,0 +1,50 @@
+/* CPYHDR { */
+/*
+ * This file is part of the 'RobCoGen-Maxima-Libraries'
+ * Copyright © 2015 2016 2017, Marco Frigerio (marco.frigerio@iit.it)
+ *
+ * See the LICENSE file for more information.
+ */
+/* } CPYHDR */
+
+
+/**
+ * Cartesian-to-homogeneous: append a '1' to a 3D coordinate vector
+ */
+cart2hom(v) :=
+if(listp(v)) then append (v,[1])
+else if(length(v)=1) then addcol(v, [1])
+     else addrow(v,[1]);
+
+/**
+ * Homogeneous-to-Cartesian: removes the 4th coordinate from an homogeneous vector
+ */
+hom2cart(v) :=
+if(listp(v)) then [v[1], v[2], v[3]]
+else if(length(v)=1) then matrix([ v[1][1], v[1][2], v[1][3]] )
+     else matrix([v[1][1]], [v[2][1]], [v[3][1]]);
+
+
+/* [CROSS PRODUCT] */
+/**
+ * Produces the skew-symmetric matrix that correspond to the cross product
+ */
+xProd_matx(v) := (if(matrixp(v)) then vl:makelist( v[i,1], i, 1, length(v) ) else vl:v,
+matrix(
+[  0  , -vl[3],  vl[2]],
+[ vl[3],   0  , -vl[1]],
+[-vl[2],  vl[1],   0  ]
+));
+
+/**
+ * Computes the cross product between 'a' and 'b'
+ */
+xProd(a,b) := xProd_matx(a) . b;
+
+
+/**
+ * With 'false', printf returns a string with the output
+ */
+noSciNotation(f) := printf(false, "~20f", f);
+
+

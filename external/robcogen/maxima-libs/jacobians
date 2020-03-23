@@ -1,0 +1,35 @@
+/* CPYHDR { */
+/*
+ * This file is part of the 'RobCoGen-Maxima-Libraries'
+ * Copyright © 2015 2016 2017, Marco Frigerio (marco.frigerio@iit.it)
+ *
+ * See the LICENSE file for more information.
+ */
+/* } CPYHDR */
+
+
+/**
+ * Returns the i-th column of the geometric Jacobian that gives the velocities of a
+ * certain reference frame - say 'F' -, expressed in another frame - say 'B'.
+ * Arguments:
+ *  - p    : position vector of the origin of F, expressed in B
+ *  - axis : z axis (joint axis) of the intermediate i-th frame between F and B
+ *  - p2   : position of the origin of the joint z axis, expressed in B
+ *
+ * Returns: a column of the geometric Jacobian, with the first rows representing
+ * the angular components, and the last the linear ones.
+ * TODO: make explicit whether the linear components come first or not
+ */
+GJacobianColumn(p, axis, p2) := addrow(axis, xProd(axis, (p-p2)));
+GJacobianColumn_prism(axis) := addrow(transpose(matrix([0,0,0])), axis);
+
+/**
+ * Returns the third direction cosine given an homogeneous transformation matrix
+ */
+zaxis(X) := hom2cart( col(X,3) );
+
+/**
+ * Returns the translation vector given an homogeneous transformation matrix
+ */
+posVector(X) := hom2cart( col(X,4) );
+

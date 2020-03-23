@@ -1,0 +1,84 @@
+/* CPYHDR { */
+/*
+ * This file is part of the 'RobCoGen-Maxima-Libraries'
+ * Copyright © 2015 2016 2017, Marco Frigerio (marco.frigerio@iit.it)
+ *
+ * See the LICENSE file for more information.
+ */
+/* } CPYHDR */
+
+
+
+/* [ROTATION MATRICES] */
+Rx(a) := matrix([1,0,0], [0,cos(a),-sin(a)], [0,sin(a),cos(a)]);
+Ry(a) := matrix([cos(a),0,sin(a)], [0,1,0], [-sin(a),0,cos(a)]);
+Rz(a) := matrix([cos(a),-sin(a),0], [sin(a),cos(a),0], [0,0,1]);
+
+Rhx(a) := matrix([1,0,0,0], [0,cos(a),-sin(a),0], [0,sin(a),cos(a),0],[0,0,0,1]);
+Rhy(a) := matrix([cos(a),0,sin(a),0], [0,1,0,0], [-sin(a),0,cos(a),0],[0,0,0,1]);
+Rhz(a) := matrix([cos(a),-sin(a),0,0], [sin(a),cos(a),0,0], [0,0,1,0],[0,0,0,1]);
+
+Th(t) := matrix([1,0,0,t[1]], [0,1,0,t[2]], [0,0,1,t[3]],[0,0,0,1]);
+
+/**
+ * 6D rotation matrices for motion vectors.
+ * Each matrix is in the form A_X_B where B is a frame rotated by an angle 'a'
+ * with respect to A (see chapter 2 of Featherstone's Rigid Body Dynamics
+ * Algorithms; he uses exactly the opposite convention, that is B_X_A)
+ */
+Rx6d(a) := matrix([1, 0     ,  0     ,  0,  0    ,  0     ],
+                  [0, cos(a), -sin(a),  0,  0    ,  0     ],
+                  [0, sin(a),  cos(a),  0,  0    ,  0     ],
+                  [0, 0     , 0      ,  1,  0    ,  0     ],
+                  [0, 0     , 0      ,  0, cos(a), -sin(a)],
+                  [0, 0     , 0      ,  0, sin(a),  cos(a)]);
+
+Ry6d(a) := matrix([ cos(a), 0, sin(a),  0     , 0 , 0     ],
+                  [ 0     , 1, 0     ,  0     , 0 , 0     ],
+                  [-sin(a), 0, cos(a),  0     , 0 , 0     ],
+                  [0      , 0, 0     ,  cos(a), 0 , sin(a)],
+                  [0      , 0, 0     ,  0     , 1 , 0     ],
+                  [0      , 0, 0     , -sin(a), 0 , cos(a)]);
+
+Rz6d(a) := matrix([cos(a), -sin(a), 0,  0     ,  0     , 0],
+                  [sin(a),  cos(a), 0,  0     ,  0     , 0],
+                  [0     ,  0     , 1,  0     ,  0     , 0],
+                  [0     ,  0     , 0,  cos(a), -sin(a), 0],
+                  [0     ,  0     , 0,  sin(a),  cos(a), 0],
+                  [0     ,  0     , 0,  0     ,  0     , 1]);
+
+/**
+ * 6D motion vectors transform for a translation of 'v'.
+ * This is in the form A_X_B, where B is translated with respect to A. To get
+ * the inverse simply use '-v' in the argument.
+ */
+T6d(v) := matrix([  1   ,  0    ,  0    ,  0     ,  0     , 0],
+                 [  0   ,  1    ,  0    ,  0     ,  0     , 0],
+                 [  0   ,  0    ,  1    ,  0     ,  0     , 0],
+                 [  0   , -v[3] ,  v[2] ,  1     ,  0     , 0],
+                 [ v[3] ,  0    , -v[1] ,  0     ,  1     , 0],
+                 [-v[2] ,  v[1] ,   0   ,  0     ,  0     , 1]);
+
+
+/**
+ * 6D rotation matrices for force vectors.
+ * Each matrix is in the form A_X_B where B is a frame rotated by an angle 'a'
+ * with respect to A (see chapter 2 of Featherstone's book)
+ */
+Rx6d_f(a) := Rx6d(a);
+Ry6d_f(a) := Ry6d(a);
+Rz6d_f(a) := Rz6d(a);
+
+/**
+ * 6D force vectors transform for a translation of 'v'.
+ * This is in the form A_X_B, where B is translated with respect to A. To get
+ * the inverse simply use '-v' in the argument.
+ */
+T6d_f(v) := matrix([  1   ,   0   ,  0  ,   0    , -v[3]  ,  v[2]],
+                   [  0   ,   1   ,  0  ,   v[3] ,  0     , -v[1]],
+                   [  0   ,   0   ,  1  ,  -v[2] ,  v[1]  ,  0   ],
+                   [  0   ,   0   ,  0  ,   1    ,  0     ,  0   ],
+                   [  0   ,   0   ,  0  ,   0    ,  1     ,  0   ],
+                   [  0   ,   0   ,  0  ,   0    ,  0     ,  1   ]);
+
+

@@ -1,0 +1,12 @@
+<robot name="Dummy">
+    <link name="base"/>
+    <link name="link1"/>
+    <joint name="jA" type="fixed">
+        <parent link="base"/>
+        <child  link="link1"/>
+    </joint>
+    <joint name="jb" type="fixed">
+        <parent link="link1"/>
+        <child  link="base"/>
+    </joint>
+</robot>

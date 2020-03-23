@@ -1,0 +1,345 @@
+Robot ur5
+{
+
+RobotBase world {
+    inertia_properties {
+        mass = 0.0
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.0
+        Iy = 0.0
+        Iz = 0.0
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+        base_link via world_joint
+    }
+}
+
+
+link base_link {
+    id = 1
+    inertia_properties {
+        mass = 4.0
+        CoM = (0.0, 0.0, 0.025)
+        Ix = 0.006933
+        Iy = 0.006933
+        Iz = 0.0072
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+        shoulder_link via shoulder_pan_joint
+        base via base_link__base_fixed_joint
+    }
+}
+
+
+link shoulder_link {
+    id = 2
+    inertia_properties {
+        mass = 3.7
+        CoM = (0.0, 0.00193, -0.02561)
+        Ix = 0.012708
+        Iy = 0.012694
+        Iz = 0.006674
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= -0.000183
+    }
+    children {
+        upper_arm_link via shoulder_lift_joint
+    }
+}
+
+
+link upper_arm_link {
+    id = 3
+    inertia_properties {
+        mass = 8.393
+        CoM = (0.2125, 0.0, -0.024201)
+        Ix = 0.017153
+        Iy = 0.609368
+        Iz = 0.604452
+        Ixy= 0.0
+        Ixz= -0.043163
+        Iyz= 0.0
+    }
+    children {
+        forearm_link via elbow_joint
+    }
+    frames {
+        urdf_upper_arm_link {
+            translation = (0.0, 0.0, 0.0)
+            rotation    = (PI/2.0, PI/2.0, 0.0)
+        }
+    }
+}
+
+
+link forearm_link {
+    id = 4
+    inertia_properties {
+        mass = 2.275
+        CoM = (0.11993, 0.0, 0.0265)
+        Ix = 0.003418
+        Iy = 0.082625
+        Iz = 0.081028
+        Ixy= 0.0
+        Ixz= 0.00723
+        Iyz= 0.0
+    }
+    children {
+        wrist_1_link via wrist_1_joint
+    }
+    frames {
+        urdf_forearm_link {
+            translation = (0.0, 0.0, 0.0)
+            rotation    = (PI/2.0, PI/2.0, 0.0)
+        }
+    }
+}
+
+
+link wrist_1_link {
+    id = 5
+    inertia_properties {
+        mass = 1.219
+        CoM = (0.0, 0.01634, 0.110949)
+        Ix = 0.017411
+        Iy = 0.01624
+        Iz = 0.002405
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.00221
+    }
+    children {
+        wrist_2_link via wrist_2_joint
+    }
+    frames {
+        urdf_wrist_1_link {
+            translation = (0.0, 0.0, 0.0)
+            rotation    = (-PI/2.0, 0.0, -PI)
+        }
+    }
+}
+
+
+link wrist_2_link {
+    id = 6
+    inertia_properties {
+        mass = 1.219
+        CoM = (0.0, 0.0018, 0.11099)
+        Ix = 0.0171
+        Iy = 0.017097
+        Iz = 0.001238
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.000244
+    }
+    children {
+        wrist_3_link via wrist_3_joint
+    }
+}
+
+
+link wrist_3_link {
+    id = 7
+    inertia_properties {
+        mass = 0.1879
+        CoM = (0.0, 0.0, 0.001159)
+        Ix = 0.000321
+        Iy = 0.000191
+        Iz = 0.000321
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+        plate_link via plate_fixed_joint
+        tool0 via wrist_3_link__tool0_fixed_joint
+    }
+    frames {
+        urdf_wrist_3_link {
+            translation = (0.0, 0.0, 0.0)
+            rotation    = (PI/2.0, 0.0, 0.0)
+        }
+    }
+}
+
+
+link plate_link {
+    id = 8
+    inertia_properties {
+        mass = 0.5
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.0012
+        Iy = 0.0012
+        Iz = 0.0012
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+        cam_link via cam_fixed_joint
+        ee_link via ee_fixed_joint
+    }
+}
+
+
+link cam_link {
+    id = 9
+    inertia_properties {
+        mass = 0.5
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.0003
+        Iy = 0.0003
+        Iz = 0.0003
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+    }
+}
+
+
+link ee_link {
+    id = 10
+    inertia_properties {
+        mass = 0.5
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.000833
+        Iy = 0.000833
+        Iz = 0.000833
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+    }
+}
+
+
+link tool0 {
+    id = 11
+    inertia_properties {
+        mass = 0.0
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.0
+        Iy = 0.0
+        Iz = 0.0
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+    }
+}
+
+
+link base {
+    id = 12
+    inertia_properties {
+        mass = 0.0
+        CoM = (0.0, 0.0, 0.0)
+        Ix = 0.0
+        Iy = 0.0
+        Iz = 0.0
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+    }
+}
+
+
+r_joint world_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.01)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint shoulder_pan_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.089159)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint shoulder_lift_joint {
+    ref_frame {
+        translation = (0.0, 0.13585, 0.0)
+        rotation    = (-PI/2.0, 0.0, 0.0)
+    }
+}
+
+r_joint elbow_joint {
+    ref_frame {
+        translation = (0.425, 0.0, -0.1197)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint wrist_1_joint {
+    ref_frame {
+        translation = (0.39225, 0.0, 0.0)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint wrist_2_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.093)
+        rotation    = (-PI/2.0, 0.0, PI)
+    }
+}
+
+r_joint wrist_3_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.09465)
+        rotation    = (-PI/2.0, 0.0, 0.0)
+    }
+}
+
+r_joint plate_fixed_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.0873)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint cam_fixed_joint {
+    ref_frame {
+        translation = (0.018, 0.115, 0.025)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint ee_fixed_joint {
+    ref_frame {
+        translation = (0.0, -0.085, 0.045)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint base_link__base_fixed_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.0)
+        rotation    = (0.0, 0.0, -PI)
+    }
+}
+
+r_joint wrist_3_link__tool0_fixed_joint {
+    ref_frame {
+        translation = (0.0, 0.0, 0.0823)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+}
+

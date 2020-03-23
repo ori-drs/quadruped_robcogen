@@ -1,0 +1,171 @@
+Robot ur5
+{
+
+RobotBase base {
+    inertia_properties {
+        mass = 4.0
+        CoM = (0.0, 0.0, 0.025)
+        Ix = 0.00693
+        Iy = 0.00693
+        Iz = 0.0072
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+        shoulder via shoulder_pan
+    }
+}
+
+
+link shoulder {
+    id = 1
+    inertia_properties {
+        mass = 3.7
+        CoM = (0.0, 0.00193, -0.02561)
+        Ix = 0.01271
+        Iy = 0.01269
+        Iz = 0.00667
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= -0.00018
+    }
+    children {
+        upper_arm via shoulder_lift
+    }
+}
+
+
+link upper_arm {
+    id = 2
+    inertia_properties {
+        mass = 8.393
+        CoM = (0.0, -0.0242, 0.2125)
+        Ix = 0.60937
+        Iy = 0.60445
+        Iz = 0.01715
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= -0.04316
+    }
+    children {
+        forearm via elbow
+    }
+}
+
+
+link forearm {
+    id = 3
+    inertia_properties {
+        mass = 2.275
+        CoM = (0.0, 0.0265, 0.11993)
+        Ix = 0.08263
+        Iy = 0.08103
+        Iz = 0.00342
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.00723
+    }
+    children {
+        wrist_1 via wr1
+    }
+}
+
+
+link wrist_1 {
+    id = 4
+    inertia_properties {
+        mass = 1.219
+        CoM = (0.0, 0.11095, 0.01634)
+        Ix = 0.01741
+        Iy = 0.00241
+        Iz = 0.01624
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.00221
+    }
+    children {
+        wrist_2 via wr2
+    }
+}
+
+
+link wrist_2 {
+    id = 5
+    inertia_properties {
+        mass = 1.219
+        CoM = (0.0, 0.0018, 0.11099)
+        Ix = 0.0171
+        Iy = 0.0171
+        Iz = 0.00124
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.00024
+    }
+    children {
+        wrist_3 via wr3
+    }
+}
+
+
+link wrist_3 {
+    id = 6
+    inertia_properties {
+        mass = 0.1879
+        CoM = (0.0, 0.00116, 0.0)
+        Ix = 0.00032
+        Iy = 0.00032
+        Iz = 0.00019
+        Ixy= 0.0
+        Ixz= 0.0
+        Iyz= 0.0
+    }
+    children {
+    }
+}
+
+
+r_joint shoulder_pan {
+    ref_frame {
+        translation = (0.0, 0.0, 0.089159)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint shoulder_lift {
+    ref_frame {
+        translation = (0.13585, 0.0, 0.0)
+        rotation    = (0.0, PI/2.0, PI)
+    }
+}
+
+r_joint elbow {
+    ref_frame {
+        translation = (0.425, 0.0, -0.1197)
+        rotation    = (0.0, -0.000001, 0.0)
+    }
+}
+
+r_joint wr1 {
+    ref_frame {
+        translation = (0.39225, 0.0, 0.09315)
+        rotation    = (0.0, 0.0, 0.0)
+    }
+}
+
+r_joint wr2 {
+    ref_frame {
+        translation = (0.09475, 0.0, 0.0)
+        rotation    = (0.0, PI/2.0, PI)
+    }
+}
+
+r_joint wr3 {
+    ref_frame {
+        translation = (0.0825, 0.0, 0.0)
+        rotation    = (0.0, PI/2.0, 0.0)
+    }
+}
+
+}
+
