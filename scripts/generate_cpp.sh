@@ -1,16 +1,38 @@
 #!/bin/bash
 
+if [ $# -lt  2 ]
+  then
+    echo "ERROR: missing required arguments ROBOT_NAME and ROBOT_DIR. Exiting ..."
+    exit 1
+fi
+
 # Arg 1 is  the name of the robot (e.g., "anymal")
 ROBOT_NAME=$1
-# Arg 2 is the model of the robot (e.g., "boxy_")
-# note the presence of the underscore to concatenate 
-# into ${ROBOT_NAME}_${ROBOT_MODEL}description -> anymal_boxy_description
-# e.g. if ${ROBOT_NAME} is "vision60" and ${ROBOT_MODEL} is empty,
-# ${ROBOT_NAME}_${ROBOT_MODEL}description -> vision60_description
-ROBOT_MODEL=$2
+
+# Arg 2 is the path of the specific robot package invoking this script (e.g., anymal_robcogen)
+ROBOT_DIR=$2
+
+if [ $# -gt 2 ]
+  then
+    # Arg 2 is the package name of the robot description (e.g., "anymal_description")
+    ROBOT_DESCRIPTION_PKG_NAME=$3
+  else
+    echo "WARNING: missing optional argument ROBOT_DESCRIPTION_PKG_NAME."
+    echo "Using default: ${ROBOT_NAME}_description"
+    ROBOT_DESCRIPTION_PKG_NAME=${ROBOT_NAME}_description
+fi
+
+if [ $# -gt 3 ]
+  then
+    # Arg 3 is the name of the root xacro file of the description, without extension (e.g., anymal)
+    ROBOT_XACRO_NAME=$4
+  else
+    echo "WARNING: missing optional argument ROBOT_XACRO_NAME."
+    echo "Using default: ${ROBOT_NAME}"
+    ROBOT_XACRO_NAME=${ROBOT_NAME}
+fi
 
 # save the folder of the specific robot we generate the code for
-ROBOT_DIR=$(rospack find ${ROBOT_NAME}_robcogen)
 QUADRUPED_DIR=$(rospack find quadruped_robcogen)
 ROBCOGEN_DIR=${QUADRUPED_DIR}/external/robcogen
 
@@ -19,8 +41,8 @@ ROBCOGEN_DIR=${QUADRUPED_DIR}/external/robcogen
 rm -f ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/*
 
 # generate the ${ROBOT_NAME} URDF from xacro
-echo "Generating \"${ROBOT_NAME}.urdf\" from \"${ROBOT_NAME}.urdf.xacro\" ..."
-xacro $(rospack find ${ROBOT_NAME}_${ROBOT_MODEL}description)/urdf/${ROBOT_NAME}.urdf.xacro > ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
+echo "Generating \"${ROBOT_NAME}.urdf\" from \"${ROBOT_XACRO_NAME}.urdf.xacro\" ..."
+xacro $(rospack find ${ROBOT_DESCRIPTION_PKG_NAME})/urdf/${ROBOT_XACRO_NAME}.urdf.xacro > ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
 
 # generate the RobCoGen robot model files from the URDF
 echo "Generating \"${ROBOT_NAME}.kindsl\" from \"${ROBOT_NAME}.urdf\" ... "
@@ -30,21 +52,9 @@ ${QUADRUPED_DIR}/external/urdf2kindsl/urdf2kindsl.py --prune-fixed-joints --lump
 echo "Setting robot to floating base ..."
 sed -i 's/RobotBase base {/RobotBase base floating {/g' ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl
 
-# move to the RobCoGen executable folder
-cd ${ROBCOGEN_DIR}
-
-echo "Setting the cpp.cfg path inside core.cfg ..."
-grep -qxF 'generator.configfile.cpp = cpp.cfg"' ${ROBCOGEN_DIR}/core.cfg || printf "%s\n" "generator.configfile.cpp = ${ROBCOGEN_DIR}/cpp.cfg" >> ${ROBCOGEN_DIR}/core.cfg
-
 # generate the C++ code inside the /tmp/gen system folder
 echo "Generating code from \"${ROBOT_NAME}.kindsl\" ..."
-
-echo "${ROBCOGEN_DIR}/robcogen.sh ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl ${ROBOT_DIR}/config/${ROBOT_NAME}.dtdsl"
-
 ${ROBCOGEN_DIR}/robcogen.sh ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl ${ROBOT_DIR}/config/${ROBOT_NAME}.dtdsl ${ROBCOGEN_DIR}/core.cfg
-
-# move back to the specific robot folder
-cd ${ROBOT_DIR}
 
 # copy the generated C++ files from /tmp/gen into the include and src folders
 echo "Copying C++ files into \"./${ROBOT_NAME}_robcogen\""
@@ -58,7 +68,10 @@ sed -i '29i} // namespace internal\n' ${ROBOT_DIR}/include/${ROBOT_NAME}_robcoge
 sed -i 's/Parameters params;/internal::Parameters params;/g' ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/jacobians.h
 
 # remove the URDF and RobCoGen robot model files
-#echo "Removing files..."
+echo "Removing files..."
 rm -f ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf 
-rm -f ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl
+#rm -f ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl
+rm -f ${ROBOT_DIR}/maxima.log
+rm -f ${ROBOT_DIR}/robcogen.log
+
 

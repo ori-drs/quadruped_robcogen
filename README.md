@@ -33,8 +33,9 @@ The generated code also depends on the Rigid Body Dynamics (RBD) interfaces avai
 
 ## The `robcogen` CMake macro
 The [robcogen.cmake](cmake/robcogen.cmake) file defines the macro to be used within your custom `CMakeLists.txt` to generate the code for your robot. It takes two arguments:
-- `ROBOT_NAME` is the name of your robot, e.g., `fido. 
-- `ROBOT_VERSION`(optional) is a convenience variable to have more flexibility on the description package name, e.g. with `2000_`  it would look for the `fido_2000_description` package to find the xacro of your robot. 
+- `ROBOT_NAME` is the name of your robot, e.g., `fido` 
+- `ROBOT_DESCRIPTION_PKG_NAME` (optional) is the name of the package where to fetch the xacro description of the robot. *Default:*  `${ROBOT_NAME}_description`
+- `ROBOT_XACRO_NAME` (optional) name of the xacro file to be parsed, without extension. *Default:* `${ROBOT_NAME}` 
 
 ## Build the Code for Your Robot
 To generate the code for your robot, create a catkin package that depends on 
@@ -97,6 +98,6 @@ Example `package.xml`:
 - The `xacro` command is invoked always without arguments
 - The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
   If you have different names for your end effector, you have to manually change them [here](config/robot.dtdsl).
-- it is assumed the description package of the robot is named either `${ROBOT_NAME}_description` or `${ROBOT_NAME}_${ROBOT_VERSION}description`, where `ROBOT_VERSION` is a string of any kind. For example, you might have a description called `fido_2000_description` if `ROBOT_NAME = fido` and `ROBOT_VERSION = 2000_` (note the underscore). 
-- The xacro file name is assumed to be named `${ROBOT_NAME}.xacro.urdf`
+- The xacro file name is assumed to be  `${ROBOT_DESCRIPTION_PKG_NAME}/urdf/${ROBOT_XACRO_NAME}.xacro.urdf`
+- links and joints names inside the xacro file **CANNOT**  start with a number
 

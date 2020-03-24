@@ -17,7 +17,7 @@ generator.outdir.models = models
 generator.outdir.tests  = test
 
 # Full path of the Maxima libraries with utilities and basic definitions
-generator.maxima.libs.path = /home/mcamurri/catkin_ws/src/quadruped_robcogen/cmake/../external/robcogen/maxima-libs
+generator.maxima.libs.path = ${ROBCOGEN_DIR}/maxima-libs
 # Name of the library with utility functions
 generator.maxima.libs.name.utils = utils
 # Name of the library with the definition of coordinate transforms
@@ -38,4 +38,4 @@ generator.misc.constantfolding = false
 
 ## TODO: continue...
 
-generator.configfile.cpp = /home/mcamurri/catkin_ws/src/quadruped_robcogen/cmake/../external/robcogen/cpp.cfg
+generator.configfile.cpp = ${ROBCOGEN_DIR}/cpp.cfg
