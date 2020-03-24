@@ -6,7 +6,7 @@ with 12 active DoF. The code includes forward/inverse kinematics and dynamics.
 Under the hood the code is generated in three steps:
 1. the xacro file is converted into URDF via the standard [`xacro`](http://wiki.ros.org/xacro) command
 2. the URDF is converted into a KINDSL file (the RobCoGen robot modelformat) with the [`urdf2kindsl`](https://bitbucket.org/robcogenteam/urdf2kindsl/src/master/) command
-3. the `<robot>.kindsl` model and the transforms file `<robot>.dtdsl` (where `<robot>` is the name of your robot) are passed to the RobCoGen executable to make the CPPs
+3. the `${ROBOT_NAME}.kindsl` model and the transforms file `${ROBOT_NAME}.dtdsl` (where `${ROBOT_NAME}` is the name of your robot) are passed to the RobCoGen executable to make the CPPs
 
 All the above programs are either copied locally into this repo or available from ROS.
 
@@ -30,6 +30,11 @@ sudo ln -s /usr/share/java/ivy.jar /usr/share/ant/lib/ivy.jar
 ```
 
 The generated code also depends on the Rigid Body Dynamics (RBD) interfaces available [as part of the pronto project](https://github.com/ori-drs/pronto/tree/master/pronto_quadruped_commons).  This is a catkinized copy of the original code [here](https://bitbucket.org/robcogenteam/cpp-iitrbd/src/master/).
+
+## The `robcogen` CMake macro
+The [robcogen.cmake](cmake/robcogen.cmake) file defines the macro to be used within your custom `CMakeLists.txt` to generate the code for your robot. It takes two arguments:
+- `ROBOT_NAME` is the name of your robot, e.g., `fido. 
+- `ROBOT_VERSION`(optional) is a convenience variable to have more flexibility on the description package name, e.g. with `2000_`  it would look for the `fido_2000_description` package to find the xacro of your robot. 
 
 ## Build the Code for Your Robot
 To generate the code for your robot, create a catkin package that depends on 
@@ -92,6 +97,6 @@ Example `package.xml`:
 - The `xacro` command is invoked always without arguments
 - The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
   If you have different names for your end effector, you have to manually change them [here](config/robot.dtdsl).
-- it is assumed the description package of the robot is named either `<robot>_description` or `<robot>_<model>description`,      where `<robot_model>` is a string of any kind. For example, you might have a description called `fido_2000_description` if `<robot> = fido` and `<model> = 2000_` (note the underscore). 
-- The xacro file name is assumed to be `<robot>.xacro.urdf`
+- it is assumed the description package of the robot is named either `${ROBOT_NAME}_description` or `${ROBOT_NAME}_${ROBOT_VERSION}description`, where `ROBOT_VERSION` is a string of any kind. For example, you might have a description called `fido_2000_description` if `ROBOT_NAME = fido` and `ROBOT_VERSION = 2000_` (note the underscore). 
+- The xacro file name is assumed to be named `${ROBOT_NAME}.xacro.urdf`
 
