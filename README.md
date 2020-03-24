@@ -11,7 +11,7 @@ Under the hood the code is generated in three steps:
 All the above programs are either copied locally into this repo or available from ROS.
 
 ## Dependencies
-The repository contains a slightly modified copy of the RobCoGen generator (version 5.0.1), which is written in Java. The following dependencies are 
+This repository contains a slightly modified copy of the RobCoGen executable (version 5.0.1), which is written in Java. The following dependencies are therefore
 required to run the program correctly:
 - Java JRE
 - ANT
@@ -23,7 +23,7 @@ On Ubuntu, these can be installed as follows:
 ```
 sudo apt install openjdk-8-jre  ant ivy maxima gcc
 ```
-*NOTE**: Ivy has a faulty installation. 
+**NOTE**: Ivy has a faulty installation. 
 If you experience problems, you can fix with a symlink:
 ```
 sudo ln -s /usr/share/java/ivy.jar /usr/share/ant/lib/ivy.jar 
@@ -90,4 +90,8 @@ Example `package.xml`:
 ```
 ## Limitations
 - The `xacro` command is invoked always without arguments
-- The transform files assumes the feet are named LF_FOOT, RF_FOOT, LH_FOOT and RH_FOOT
+- The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
+  If you have different names for your end effector, you have to manually change them [here](config/robot.dtdsl).
+- it is assumed the description package of the robot is named either `<robot>_description` or `<robot>_<model>description`,      where `<robot_model>` is a string of any kind. For example, you might have a description called `fido_2000_description` if `<robot> = fido` and `<model> = 2000_` (note the underscore). 
+- The xacro file name is assumed to be `<robot>.xacro.urdf`
+
