@@ -68,7 +68,7 @@ macro(robcogen ROBOT_NAME)
 
   # remove the sources so robcogen generates the code always
   add_custom_command(TARGET ${LIB_NAME} POST_BUILD
-                     COMMAND rm ${SOURCES} ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.dtdsl ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.kindsl
+                     COMMAND rm ${SOURCES}
                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 
