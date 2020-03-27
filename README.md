@@ -98,6 +98,16 @@ Example `package.xml`:
 - The `xacro` command is invoked always without arguments
 - The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
   If you have different names for your end effector, you have to manually change them [here](config/robot.dtdsl).
-- The xacro file name is assumed to be  `${ROBOT_DESCRIPTION_PKG_NAME}/urdf/${ROBOT_XACRO_NAME}.xacro.urdf`
+- The xacro file path is assumed to be `${ROBOT_DESCRIPTION_PKG_NAME}/urdf/${ROBOT_XACRO_NAME}.xacro.urdf`
 - links and joints names inside the xacro file **CANNOT**  start with a number
+- The name of the robot defined the xacro file has to be `${ROBOT_NAME}`
 
+## TODO
+- xacro parameter passing
+- automated script to generate catkin package of a robot 
+## Credits
+**Main author:** Marco Camurri 
+All the material under the `external` folder (i.e., the `RobCoGen`  and `urdf2kindsl` programs) have been originally developed by Marco Frigerio. 
+
+## License
+This repository is released under the BSD License. See the LICENSE file for more details.
