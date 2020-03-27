@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(@ROBOT_NAME@_robcogen)
+
+add_compile_options(-std=c++11)
+
+find_package(catkin REQUIRED COMPONENTS pronto_quadruped_commons
+                                        quadruped_robcogen
+                                        @ROBOT_DESCRIPTION_PKG_NAME@)
+
+set(LIB_NAME ${PROJECT_NAME})
+
+find_package(Eigen3)
+
+catkin_package(INCLUDE_DIRS include
+               LIBRARIES @ROBOT_NAME@_robcogen
+               CATKIN_DEPENDS pronto_quadruped_commons
+                              quadruped_robcogen 
+                              @ROBOT_DESCRIPTION_PKG_NAME@)
+
+include_directories(include 
+                    ${catkin_INCLUDE_DIRS})
+
+include_directories(./include)
+include_directories(./include/${PROJECT_NAME})
+include(${quadruped_robcogen_SOURCE_PREFIX}/cmake/robcogen.cmake)
+
+# call the macro to generate the C++ code
+robcogen(@ROBOT_NAME@ @ROBOT_DESCRIPTION_PKG_NAME@ @ROBOT_XACRO_NAME@)
+
+install(TARGETS ${LIB_NAME}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+
