@@ -40,7 +40,7 @@ TODO...
 
 # Copyright notice
 
-Copyright © 2018-2019 Marco Frigerio
+Copyright © 2018-2020 Marco Frigerio
 
 Released under the BSD 2-clause license. See the `LICENSE` file for additional
 information.

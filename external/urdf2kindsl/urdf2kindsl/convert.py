@@ -49,9 +49,9 @@ class Converter :
             options[opt_key_prune] = False
         if opt_key_toframes not in options:
             options[opt_key_toframes] = True
-        if opt_key_lumpi not in options :    
+        if opt_key_lumpi not in options :
             options[opt_key_lumpi] = True
-            
+
         self.robotName = urdf.robotName
         self.links  = ODict()
         self.joints = ODict()
@@ -190,8 +190,8 @@ class Converter :
                     loadMe['com'] = (loadMe['com']*m1 + addMe['com']*m2)/(m1+m2)
 
             toBeDeleted.add(leaf)
-              
-        changed = len(toBeDeleted) > 0  
+
+        changed = len(toBeDeleted) > 0
         for eraseMe in toBeDeleted :
             joint = eraseMe.parentJ
             parent= eraseMe.parent
@@ -265,16 +265,24 @@ class Converter :
                - sin(rx) cos(ry) = axis_y
                  cos(rx) cos(ry) = axis_z
             '''
-
+            axis_rounded = np.round(axis_linkframe, 5)
             ry = math.asin( axis_linkframe[0] )
-            cy = math.cos(ry)
-            if round(cy,5) != 0.0 :
-                rx = math.asin( - axis_linkframe[1] / cy )
-            else:
-                rx = 0.0
+            if axis_rounded[2] != 0.0 :
+                rx = math.atan2( -axis_linkframe[1], axis_linkframe[2])
+            else :
+                cy = math.cos(ry)
+                if round(cy,5) != 0.0 :
+                    rx = math.asin( - axis_linkframe[1] / cy )
+                else:
+                    rx = 0.0
             rz = 0.0;
-            if round(math.cos(rx)*math.cos(ry),5) != round(axis_linkframe[2],5) :
-                logger.warning("possible inconsistency in the joint frame rotation")
+            dbgmsg = '''
+                Joint frame conversion:
+                joint: {joint}
+                joint axis = {axis}  (in robcogen link-frame coordinates)
+                (rx ry rz) = {rots}  (before possible rz correction)'''\
+                .format(joint=urdfjoint.name, axis=axis_rounded, rots=tuple(round(r,5) for r in (rx,ry,rz)) )
+            logger.debug(dbgmsg)
 
         # Rotation matrix from RobCoGen joint frame to link frame
         rcglink_X_rcgjoint = numeric.getR_intrinsicXYZ(rx, ry, rz)
