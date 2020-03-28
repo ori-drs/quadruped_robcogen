@@ -23,7 +23,7 @@ fi
 if [ $# -gt 2 ]
   then
     # Arg 3 is the name of the root xacro file of the description, without extension (e.g., anymal)
-    ROBOT_XACRO_NAME=$4
+    ROBOT_XACRO_NAME=$3
   else
     echo "WARNING: missing optional argument ROBOT_XACRO_NAME."
     echo "Using default: ${ROBOT_NAME}"
