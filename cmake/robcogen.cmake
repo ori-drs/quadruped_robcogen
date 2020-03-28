@@ -50,11 +50,6 @@ macro(robcogen ROBOT_NAME)
               ${CMAKE_SOURCE_DIR}/src/inertia_properties.cpp
               ${CMAKE_SOURCE_DIR}/src/miscellaneous.cpp)
 
-
-
-  # Add library
-  add_library(${LIB_NAME} SHARED ${SOURCES})
-
   # copy the transforms file into the target package with the name of the robot in it
   # NOTE: this file assumes there are four feet named LF_FOOT RF_FOOT LH_FOOT and RH_FOOT 
   configure_file(${CURRENT_MACRO_DIR}/../config/robot.dtdsl ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.dtdsl)
@@ -66,10 +61,6 @@ macro(robcogen ROBOT_NAME)
                      DEPENDS ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.dtdsl
                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-  # remove the sources so robcogen generates the code always
-  add_custom_command(TARGET ${LIB_NAME} POST_BUILD
-                     COMMAND rm ${SOURCES}
-                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 
   add_custom_target(${ROBOT_NAME}_robcogen_cpp 
@@ -79,6 +70,15 @@ macro(robcogen ROBOT_NAME)
                               ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}
                  LIBRARIES ${LIB_NAME}
                  DEPENDS EIGEN3
+                 CATKIN_DEPENDS quadruped_robcogen
                  EXPORTED_TARGETS ${ROBOT_NAME}_robcogen_cpp)
+
+  # Add library
+  add_library(${LIB_NAME} SHARED ${SOURCES})
+
+  # remove the sources so robcogen generates the code always
+  add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+                     COMMAND rm ${SOURCES}
+                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endmacro()
 
