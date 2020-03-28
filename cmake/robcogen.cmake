@@ -22,6 +22,21 @@ macro(robcogen ROBOT_NAME)
     message(STATUS "ROBOT_XACRO_NAME = ${ROBOT_XACRO_NAME}")
   endif ()
 
+  if (${NUM_EXTRA_ARGS} GREATER 2)
+    list(GET EXTRA_MACRO_ARGS 2 XACRO_ARGS_FILE)
+    message(STATUS "XACRO_ARGS_FILE = ${XACRO_ARGS_FILE}")
+    file(STRINGS ${XACRO_ARGS_FILE} XACRO_ARGS)
+    # manual version of the list(JOIN ...) 
+    # command which is not available in cmake 3.10 
+    foreach(XACRO_ARG IN LISTS XACRO_ARGS)
+      # remove leading/trailing spaces from item in list
+      string(STRIP "${XACRO_ARG}" XACRO_ARG)
+      # concatenate the xacro args with the "@@@" pattern
+      set(XACRO_ARGS_CLI "${XACRO_ARGS_CLI}@@@${XACRO_ARG}")
+    endforeach()
+    message("${XACRO_ARGS_CLI}")
+  endif ()
+
   #set the name of the library that is going to be created
   set(LIB_NAME ${ROBOT_NAME}_robcogen)
   
@@ -57,7 +72,7 @@ macro(robcogen ROBOT_NAME)
 
   add_custom_command(OUTPUT ${HEADER} ${SOURCES} ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.kindsl 
                      COMMAND ${CURRENT_MACRO_DIR}/../scripts/generate_cpp.sh
-                     ARGS ${ROBOT_NAME} ${CMAKE_SOURCE_DIR} ${ROBOT_DESCRIPTION_PKG_NAME} ${ROBOT_XACRO_NAME}
+                     ARGS ${ROBOT_NAME} ${CMAKE_SOURCE_DIR} ${ROBOT_DESCRIPTION_PKG_NAME} ${ROBOT_XACRO_NAME} ${XACRO_ARGS_CLI}
                      DEPENDS ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.dtdsl
                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 

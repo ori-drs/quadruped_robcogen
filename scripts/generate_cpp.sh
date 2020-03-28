@@ -14,7 +14,7 @@ ROBOT_DIR=$2
 
 if [ $# -gt 2 ]
   then
-    # Arg 2 is the package name of the robot description (e.g., "anymal_description")
+    # Arg 3 is the package name of the robot description (e.g., "anymal_description")
     ROBOT_DESCRIPTION_PKG_NAME=$3
   else
     echo "WARNING: missing optional argument ROBOT_DESCRIPTION_PKG_NAME."
@@ -24,7 +24,7 @@ fi
 
 if [ $# -gt 3 ]
   then
-    # Arg 3 is the name of the root xacro file of the description, without extension (e.g., anymal)
+    # Arg 4 is the name of the root xacro file of the description, without extension (e.g., anymal)
     ROBOT_XACRO_NAME=$4
   else
     echo "WARNING: missing optional argument ROBOT_XACRO_NAME."
@@ -32,6 +32,14 @@ if [ $# -gt 3 ]
     ROBOT_XACRO_NAME=${ROBOT_NAME}
 fi
 
+if [ $# -gt 4 ]
+  then
+    # Arg 5 is a string of xacro command line arguments concatenated with the '@@@' pattern
+    # so that all the xacro arguments appear as one string
+    XACRO_ARGS=$5
+    # replace the "@@@" pattern with a space, so we can pass the arguments to xacro
+    XACRO_ARGS=${XACRO_ARGS//@@@/" "}
+fi
 # save the folder of the specific robot we generate the code for
 QUADRUPED_DIR=$(rospack find quadruped_robcogen)
 ROBCOGEN_DIR=${QUADRUPED_DIR}/external/robcogen
@@ -42,7 +50,7 @@ rm -f ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/*
 
 # generate the ${ROBOT_NAME} URDF from xacro
 echo "Generating \"${ROBOT_NAME}.urdf\" from \"${ROBOT_XACRO_NAME}.urdf.xacro\" ..."
-xacro $(rospack find ${ROBOT_DESCRIPTION_PKG_NAME})/urdf/${ROBOT_XACRO_NAME}.urdf.xacro > ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
+xacro $(rospack find ${ROBOT_DESCRIPTION_PKG_NAME})/urdf/${ROBOT_XACRO_NAME}.urdf.xacro ${XACRO_ARGS} > ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
 
 # generate the RobCoGen robot model files from the URDF
 echo "Generating \"${ROBOT_NAME}.kindsl\" from \"${ROBOT_NAME}.urdf\" ... "

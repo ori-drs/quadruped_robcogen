@@ -36,7 +36,7 @@ The [robcogen.cmake](cmake/robcogen.cmake) file defines the macro to be used wit
 - `ROBOT_NAME` is the name of your robot, e.g., `fido` 
 - `ROBOT_DESCRIPTION_PKG_NAME` (optional) is the name of the package where to fetch the xacro description of the robot. *Default:*  `${ROBOT_NAME}_description`
 - `ROBOT_XACRO_NAME` (optional) name of the xacro file to be parsed, without extension. *Default:* `${ROBOT_NAME}` 
-
+- `XACRO_ARGS_FILE` (optional) absolute path of a file containing the arguments to be passed to the `xacro` command, one per line (see below)
 ## Build the Code for Your Robot
 To generate the code for your robot, create a catkin package that depends on 
 `quadruped_robcogen` and use the provided the `robcogen` cmake macro to build your code.
@@ -87,11 +87,30 @@ install(TARGETS ${LIB_NAME}
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 ```
+## Xacro arguments
+If your xacro file has arguments, you can pass them to the `robcogen` cmake macro as a file located in the `config` folder of your robot package.  
+The file has to have one argument per line. 
+
+For example, the `fido.urdf.xacro` from the `fido_description` package might have the two arguments `simulation` and `sensors` to decide whether to include links/joints specific for simulation and  perception, repsectively. These can be set in the   `fido_robcogen/config/xacro_args.txt` file as follows:
+```
+simulation:=false
+sensors:=true
+```
+Then, the filename would be passed as a fourth argument to the `robcogen` macro:
+```
+cmake_minimum_required(VERSION 3.10.2)
+project(fido_robcogen)
+
+...
+
+robcogen(fido fido_description fido ${CMAKE_CURRENT_SOURCE_DIR}/config/xacro_args.txt)
+
+...
+```
 
 ## Limitations
-- The `xacro` command is invoked always without arguments
 - The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
-  If you have different names for your end effector, you have to manually change them [here](config/robot.dtdsl).
+  If you have different names for your end effectors, you have to manually change them [here](config/robot.dtdsl).
 - The xacro file path is assumed to be `${ROBOT_DESCRIPTION_PKG_NAME}/urdf/${ROBOT_XACRO_NAME}.xacro.urdf`
 - links and joints names inside the xacro file **CANNOT**  start with a number
 - The name of the robot defined the xacro file has to be `${ROBOT_NAME}`
