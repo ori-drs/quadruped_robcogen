@@ -34,7 +34,6 @@ macro(robcogen ROBOT_NAME)
       # concatenate the xacro args with the "@@@" pattern
       set(XACRO_ARGS_CLI "${XACRO_ARGS_CLI}@@@${XACRO_ARG}")
     endforeach()
-    message("${XACRO_ARGS_CLI}")
   endif ()
 
   #set the name of the library that is going to be created
