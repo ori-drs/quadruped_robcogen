@@ -68,6 +68,9 @@ macro(robcogen ROBOT_NAME)
   # NOTE: this file assumes there are four feet named LF_FOOT RF_FOOT LH_FOOT and RH_FOOT 
   configure_file(${CURRENT_MACRO_DIR}/../config/robot.dtdsl ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.dtdsl)
   configure_file(${CURRENT_MACRO_DIR}/../external/robcogen/core.cfg.in ${CURRENT_MACRO_DIR}/../external/robcogen/core.cfg)
+  
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
   add_custom_command(OUTPUT ${HEADER} ${SOURCES} ${CMAKE_SOURCE_DIR}/config/${ROBOT_NAME}.kindsl 
                      COMMAND ${CURRENT_MACRO_DIR}/../scripts/generate_cpp.sh

@@ -66,6 +66,9 @@ ${ROBCOGEN_DIR}/robcogen.sh ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl ${ROBOT_DIR
 
 # copy the generated C++ files from /tmp/gen into the include and src folders
 echo "Copying C++ files into \"./${ROBOT_NAME}_robcogen\""
+mkdir -p ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/
+mkdir -p ${ROBOT_DIR}/src/
+
 cp /tmp/gen/cpp/*.h ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/
 cp /tmp/gen/cpp/*.cpp ${ROBOT_DIR}/src/
 
