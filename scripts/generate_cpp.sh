@@ -72,12 +72,6 @@ mkdir -p ${ROBOT_DIR}/src/
 cp /tmp/gen/cpp/*.h ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/
 cp /tmp/gen/cpp/*.cpp ${ROBOT_DIR}/src/
 
-# modify the jacobians.h header file that otherwise would cause compilation errors
-echo "Fixing namespaces in jacobians.h ..."
-sed -i '12inamespace internal {' ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/jacobians.h
-sed -i '29i} // namespace internal\n' ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/jacobians.h
-sed -i 's/Parameters params;/internal::Parameters params;/g' ${ROBOT_DIR}/include/${ROBOT_NAME}_robcogen/jacobians.h
-
 # remove the URDF and RobCoGen robot model files
 echo "Removing files..."
 rm -f ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf 
