@@ -94,8 +94,8 @@ macro(robcogen ROBOT_NAME)
   add_library(${LIB_NAME} SHARED ${SOURCES})
 
   # remove the sources so robcogen generates the code always
-  add_custom_command(TARGET ${LIB_NAME} POST_BUILD
-                     COMMAND rm ${SOURCES}
-                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+  #add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+  #                   COMMAND rm ${SOURCES}
+  #                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endmacro()
 
