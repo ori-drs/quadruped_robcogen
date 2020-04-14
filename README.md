@@ -111,6 +111,8 @@ robcogen(fido fido_description fido ${CMAKE_CURRENT_SOURCE_DIR}/config/xacro_arg
 ## Limitations
 - The transform files assumes the feet are named `LF_FOOT`, `RF_FOOT`, `LH_FOOT` and `RH_FOOT`.
   If you have different names for your end effectors, you have to manually change them [here](config/robot.dtdsl).
+- The robot is assumed to have an IMU with a link called `imu_link` acting as coordinate frame for its measurementas.  
+  Again, you can change the name in the template [here](config/robot.dtdsl).
 - The xacro file path is assumed to be `${ROBOT_DESCRIPTION_PKG_NAME}/urdf/${ROBOT_XACRO_NAME}.xacro.urdf`
 - links and joints names inside the xacro file **CANNOT**  start with a number
 - The name of the robot defined the xacro file has to be `${ROBOT_NAME}`
