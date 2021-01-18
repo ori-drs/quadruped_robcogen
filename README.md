@@ -11,8 +11,8 @@ Under the hood the code is generated in three steps:
 All the above programs are either copied locally into this repo or available from ROS.
 
 ## Dependencies
-This repository contains a slightly modified copy of the RobCoGen executable (version 5.0.1), which is written in Java. The following dependencies are therefore
-required to run the program correctly:
+This repository contains a slightly modified copy (to bypass the interactive menu) of the RobCoGen executable (version 5.0.1), which is written in Java.
+The following dependencies are therefore required to run the program correctly:
 - Java JRE
 - ANT
 - Ivy
@@ -117,8 +117,6 @@ robcogen(fido fido_description fido ${CMAKE_CURRENT_SOURCE_DIR}/config/xacro_arg
 - links and joints names inside the xacro file **CANNOT**  start with a number
 - The name of the robot defined the xacro file has to be `${ROBOT_NAME}`
 
-## TODO
-- xacro parameter passing
 ## Credits
 **Main author:** Marco Camurri 
 All the material under the `external` folder (i.e., the `RobCoGen`  and `urdf2kindsl` programs) have been originally developed by Marco Frigerio. 
