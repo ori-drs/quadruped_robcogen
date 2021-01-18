@@ -1,6 +1,8 @@
 import math
 import numpy as np
 
+close_enough_to_zero_R = 1e-10 # for the elements of rotation matrices
+
 '''
 Extrinsic rotations are about the axes of the original coordinate system, which
 is assumed to remain motionless. This is the convention of the 'rpy' attribute
@@ -35,10 +37,41 @@ def getR_intrinsicXYZ(rx, ry, rz):
 '''
 Extract the intrinsic Euler angles XYZ from the rotation matrix **base_R_rotated**
 '''
-def getIntrinsicXYZFromR( R ) :
-    rx = math.atan2(-R[1,2], R[2,2])
-    ry = math.asin( R[0,2] )
-    rz = math.atan2(-R[0,1], R[0,0])
+def getIntrinsicXYZFromR( Rin ) :
+    # We need truncation, otherwise small coefficients will make the ratios
+    # inside atan big enough to induce wrong results
+    R = np.copy( Rin )
+    R[ abs(R)<close_enough_to_zero_R ] = 0.0
+
+    if R[0,2] != 1.0 and R[0,2] != -1.0 : # if not singular case, ie if not cos(ry) = 0
+        ry = math.asin( R[0,2] )
+        rx = math.atan2(-R[1,2], R[2,2])
+        rz = math.atan2(-R[0,1], R[0,0])
+    else :
+        # In the singular case, we use other elements of the matrix to
+        # reconstruct the angles. The expressions in these elements have the
+        # form of sine/cosine of the sum of rx and rz; rz can however be set
+        # arbitrarily to 0
+        if R[0,2] == 1.0 :
+            '''
+            cos(ry) cos(rz)                      - cos(ry) sin(rz)                   1
+    cos(rx) sin(rz) + sin(rx) cos(rz)    cos(rx) cos(rz) - sin(rx) sin(rz)           0
+    sin(rx) sin(rz) - cos(rx) cos(rz)    cos(rx) sin(rz) + sin(rx) cos(rz)           0
+            '''
+            ry = math.pi/2
+            rz = 0.0
+            rx = math.atan2(R[1,0], -R[2,0]) # this is really rx+rz, but we set rz=0
+        else : # R[0,2] = -1
+            '''
+            cos(ry) cos(rz)                      - cos(ry) sin(rz)                  -1
+    cos(rx) sin(rz) - sin(rx) cos(rz)    cos(rx) cos(rz) + sin(rx) sin(rz)           0
+    sin(rx) sin(rz) + cos(rx) cos(rz)   -cos(rx) sin(rz) + sin(rx) cos(rz)           0
+            '''
+            # R[1,1] = cos(rx-rz)
+            # R[2,1] = sin(rx-rz)
+            ry = - math.pi/2
+            rz = 0.0
+            rx = math.atan2( R[2,1], R[1,1])
 
     return (rx, ry, rz)
 

@@ -100,9 +100,7 @@ class Converter :
             # Let's first explicitly check for the nasty case where the root is
             # a dummy link, connected via a fixed joint to the first link
             self._collapseDummyRoots()
-            keepPruning = True
-            while keepPruning :
-                keepPruning = self._pruneDummies(options)
+            self._pruneFixedJoints(options)
 
     def _collapseDummyRoots(self):
         root = self.root
@@ -132,28 +130,49 @@ class Converter :
 
         self.root = root
 
-    def _pruneDummies(self, options):
-        toBeDeleted = set()
-        for leaf in self.leafs :
-            joint  = leaf.parentJ
-            parent = leaf.parent
+    def _pruneFixedJoints(self, options):
+        # Use a list to preserve the order in which the links are added. This
+        # ensures the same computation for different runs of the tool on the
+        # same robot model, which makes the output deterministic.
+        toBeDeleted = []
+        for link in self.links.values():
+            joint  = link.parentJ
+            parent = link.parent
+            if joint is not None and parent is not None:
+                if joint.type == 'fixed' :
+                    toBeDeleted.append(link)
 
-            if joint is None or parent is None:
-                continue # go on with the next leaf
-            if joint.type != 'fixed' :
-                continue
+        for deleteme in toBeDeleted :
+            joint  = deleteme.parentJ
+            parent = deleteme.parent
 
-            logger.debug("Trying to collapse link '{0}', connected by joint '{1}'".format(leaf.name, joint.name))
+            logger.debug("Pruning link '{0}', connected by joint '{1}'".format(deleteme.name, joint.name))
+
+            # First of all, we need to move up the children of 'deleteme', i.e.
+            # the grandfather becomes the father
+            parent.children.remove( (deleteme, joint) )
+            for (successor, sjoint) in deleteme.children :
+                successor.parent = parent # 'parent' is currently the grandparent of 'successor'
+                parent.children.append( (successor, sjoint) )
+
+                # Now we have to adapt the joint frame data ...
+                jframe = sjoint.frame
+                # We need the [:,:] to assign values to the same memory
+                # location, because the translation attribute is a view
+                # of H. If we change H, the view will be inconsistent
+                jframe.H[:,:] = np.matmul( joint.frame.H, jframe.H )
+                jframe.rot = numeric.getIntrinsicXYZFromR( jframe.H[0:3,0:3] )
+
             if options[opt_key_toframes] :
-                # We need to "move" the frames associated with 'leaf' into
+                # We need to "move" the frames associated with 'deleteme' into
                 # the parent frames. First of all, the implicit link frame,
                 # which is the same as the supporting-joint frame:
-                parent.frames[leaf.name] = joint.frame
+                parent.frames[deleteme.name] = joint.frame
 
                 # Then the additional custom frames on the link; for these
                 # ones we must perform a coordinate transform
-                for ufr in leaf.frames.keys() :
-                    original = leaf.frames[ufr]
+                for ufr in deleteme.frames.keys() :
+                    original = deleteme.frames[ufr]
                     shiftedup= Converter.Frame()
                     # We need the [:,:] to assign values to the same memory
                     # location, because the translation attribute is a view
@@ -166,7 +185,7 @@ class Converter :
                 # Keep in mind that at this point all the inertia properties
                 # are in robcogen format, that is, in link coordinates. And
                 # the link frame is the same as the supporting-joint frame
-                if leaf.inertia['mass'] != 0 :
+                if deleteme.inertia['mass'] != 0 :
                     loadMe = parent.inertia
                     parent_R_leaf = numeric.getR_intrinsicXYZ( *joint.frame.rot )
 
@@ -176,7 +195,7 @@ class Converter :
                     tr = - np.matmul( parent_R_leaf.T , joint.frame.tr )
                     # Transform the inertia of the link in the coordinate
                     # system of the parent link
-                    addMe = numeric.rotoTranslateInertia(leaf.inertia, tr, parent_R_leaf)
+                    addMe = numeric.rotoTranslateInertia(deleteme.inertia, tr, parent_R_leaf)
                     m1 = loadMe['mass']
                     m2 = addMe['mass']
 
@@ -189,17 +208,13 @@ class Converter :
                     loadMe['Iyz'] = loadMe['Iyz'] + addMe['Iyz']
                     loadMe['com'] = (loadMe['com']*m1 + addMe['com']*m2)/(m1+m2)
 
-            toBeDeleted.add(leaf)
-
         changed = len(toBeDeleted) > 0
         for eraseMe in toBeDeleted :
             joint = eraseMe.parentJ
-            parent= eraseMe.parent
-            parent.children.remove( (eraseMe, joint) )
             del self.joints[joint.name]
             del joint
             del self.links[eraseMe.name]
-            del eraseMe
+        del toBeDeleted
 
         # Reconstruct the leafs array, after the pruning
         self.leafs = [l for l in self.links.values() if len(l.children)==0]
@@ -277,11 +292,12 @@ class Converter :
                     rx = 0.0
             rz = 0.0;
             dbgmsg = '''
-                Joint frame conversion:
-                joint: {joint}
-                joint axis = {axis}  (in robcogen link-frame coordinates)
+                Joint frame conversion for '{joint}':
+                Axis       = {axis}  (in robcogen '{link}'-frame coordinates)
                 (rx ry rz) = {rots}  (before possible rz correction)'''\
-                .format(joint=urdfjoint.name, axis=axis_rounded, rots=tuple(round(r,5) for r in (rx,ry,rz)) )
+                .format(joint=urdfjoint.name, axis=axis_rounded,
+                        link=joint.predecessor.name,
+                        rots=tuple(round(r,5) for r in (rx,ry,rz)) )
             logger.debug(dbgmsg)
 
         # Rotation matrix from RobCoGen joint frame to link frame
@@ -304,6 +320,7 @@ class Converter :
 
             # If we have a pure rotation about Z ...
             if np.equal( np.round(Rz, roundDigits), Z).all() :
+                logger.debug("The difference between robcogen and urdf frame seems to be a pure rotation about Z")
                 # Special case angle=PI, for which the formulas below do not work
                 if round(R[0,0],roundDigits) == -1 and round(R[1,1],roundDigits) == -1 :
                     rz = math.pi

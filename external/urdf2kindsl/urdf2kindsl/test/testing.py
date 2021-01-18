@@ -31,12 +31,18 @@ class CompareExpectedOutputTests(unittest.TestCase):
         generated.seek(0)
 
         diff = difflib.unified_diff(expected.readlines(), generated.readlines(), fromfile=expected_kindsl, tofile='<generated>', n=0)
-        expected.close()
-        generated.close()
         count = 0
         for line in diff :
             print(line)
             count = count + 1
+        if count > 0 :
+            # if something is different, save the whole file for the user to ispect
+            o = open('test-generated.kindsl','w')
+            generated.seek(0)
+            o.write(generated.getvalue())
+            o.close()
+        expected.close()
+        generated.close()
         assert(count == 0)
 
 
@@ -62,6 +68,16 @@ class CompareExpectedOutputTests(unittest.TestCase):
         options[convert.opt_key_prune] = True
         self.common(input_urdf, expected_kindsl, options)
 
+    def test_prune_fixed_joints(self):
+        subdir = 'pruning'
+        input_urdf      = os.path.join(thisDir, subdir, 'fixed_joints.urdf')
+        expected_kindsl = os.path.join(thisDir, subdir, 'pruned.kindsl')
+        options = {
+            convert.opt_key_prune    : True,
+            convert.opt_key_toframes : True,
+            convert.opt_key_lumpi    : True
+        }
+        self.common(input_urdf, expected_kindsl, options)
 
 
 if __name__ == "__main__":
