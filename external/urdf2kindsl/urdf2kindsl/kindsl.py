@@ -38,7 +38,8 @@ class NumFormatter :
 class Serializer :
     '''Writes the Kinematics-DSL document corresponding to the given Converter instance
     '''
-    def __init__(self, outfile, numFormatter=NumFormatter() ):
+    def __init__(self, outfile, numFormatter=NumFormatter(), floating=False):
+        self.floating = floating
         self.__ind = 0
         self.linkID = 1
         self.file = outfile
@@ -128,7 +129,10 @@ class Serializer :
     def writeModel(self, converted):
         self.myprint('Robot ' + converted.robotName + '\n{\n')
         robotBase = converted.root
-        self._blockStart('RobotBase ' + robotBase.name)
+        if self.floating:
+            self._blockStart('RobotBase ' + robotBase.name + ' floating')
+        else:
+            self._blockStart('RobotBase ' + robotBase.name)
         self.printInertiaParams(robotBase.inertia)
         self.printChildren(robotBase)
         self.printUserFrames(robotBase)

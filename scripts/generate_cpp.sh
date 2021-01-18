@@ -54,11 +54,7 @@ xacro $(rospack find ${ROBOT_DESCRIPTION_PKG_NAME})/urdf/${ROBOT_XACRO_NAME}.urd
 
 # generate the RobCoGen robot model files from the URDF
 echo "Generating \"${ROBOT_NAME}.kindsl\" from \"${ROBOT_NAME}.urdf\" ... "
-${QUADRUPED_DIR}/external/urdf2kindsl/urdf2kindsl.py --prune-fixed-joints --lump-inertia -o ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
-
-# modify the RobCoGen robot model file to set the robot as floating base (otherwise some functions will not be generated)
-echo "Setting robot to floating base ..."
-sed -i 's/RobotBase base {/RobotBase base floating {/g' ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl
+${QUADRUPED_DIR}/external/urdf2kindsl/urdf2kindsl.py --prune-fixed-joints --lump-inertia --floating -o ${ROBOT_DIR}/config/${ROBOT_NAME}.kindsl ${ROBOT_DIR}/config/${ROBOT_NAME}.urdf
 
 # generate the C++ code inside the /tmp/gen system folder
 echo "Generating code from \"${ROBOT_NAME}.kindsl\" ..."

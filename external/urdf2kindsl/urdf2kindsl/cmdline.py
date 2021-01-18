@@ -24,6 +24,7 @@ def main() :
             type=int,
             help='number of digits of the fractional part of an angle used to determine if it is equal to PI (default 5)',
             default=5)
+    argparser.add_argument('--floating', dest='floating', action='store_true', help='declare the base as floating')
     argparser.add_argument('--prune-fixed-joints', dest='prunefixed',
             action='store_true',
             help='prune fixed joints and child links - see also the following options')
@@ -39,6 +40,7 @@ def main() :
     argparser.set_defaults(prunefixed=False)
     argparser.set_defaults(lumpinertia=True)
     argparser.set_defaults(toframes=True)
+    argparser.set_defaults(floating=False)
 
     argparser.add_argument('--log-level', type=str, dest='loglevel',
             default='warning',
@@ -67,7 +69,7 @@ def main() :
         }
         conv = convert.Converter( urdfin, converterOpts )
         form = kindsl.NumFormatter( round_digits=args.digits, pi_round_digits=args.pi_digits)
-        ser  = kindsl.Serializer(ofile, numFormatter=form)
+        ser  = kindsl.Serializer(ofile, numFormatter=form, floating=args.floating)
         ser.writeModel(conv)
 
 if __name__ == '__main__':
