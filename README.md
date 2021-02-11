@@ -50,7 +50,7 @@ rosrun quadruped_robcogen generate_catkin_pkg.sh fido
 Would produce the  a `CMakeLists.txt` for a robot called `fido`:
 
 ```
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(fido_robcogen)
 
 add_compile_options(-std=c++11)
